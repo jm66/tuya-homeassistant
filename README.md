@@ -19,6 +19,7 @@ switch:
     host: xxx.xxx.xxx.xxx
     local_key: xxxxxxxxxxxxxxxx
     device_id: xxxxxxxxxxxxxxxxxxxx
+    icon: mdi:xxx
     switches:
       switch1:
         friendly_name: Switch 1
@@ -35,6 +36,7 @@ switch:
     switches:
       switch1:
         friendly_name: Switch 1
+        icon: mdi:xxx
         id: 1
       switch2:
         friendly_name: Switch 2

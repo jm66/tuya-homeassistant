@@ -6,12 +6,12 @@ https://home-assistant.io/components/switch.tuya/
 """
 import voluptuous as vol
 from homeassistant.components.switch import SwitchDevice, PLATFORM_SCHEMA
-from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_ID, CONF_SWITCHES, CONF_FRIENDLY_NAME)
+from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_ID, CONF_SWITCHES, CONF_FRIENDLY_NAME, CONF_ICON)
 import homeassistant.helpers.config_validation as cv
 from time import time
 from threading import Lock
 
-REQUIREMENTS = ['pytuya==7.0']
+REQUIREMENTS = ['pytuya==7.0.2']
 
 CONF_DEVICE_ID = 'device_id'
 CONF_LOCAL_KEY = 'local_key'
@@ -25,6 +25,7 @@ SWITCH_SCHEMA = vol.Schema({
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME): cv.string,
+    vol.Optional(CONF_ICON): cv.icon,
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_DEVICE_ID): cv.string,
     vol.Required(CONF_LOCAL_KEY): cv.string,
@@ -54,7 +55,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 TuyaDevice(
                     outlet_device,
                     device_config.get(CONF_FRIENDLY_NAME, object_id),
-                    device_config.get(CONF_ID),
+                    device_config.get(CONF_ICON),
+                    device_config.get(CONF_ID)
                 )
         )
 
@@ -64,6 +66,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 TuyaDevice(
                     outlet_device,
                     name,
+                    config.get(CONF_ICON),
                     config.get(CONF_ID)
                 )
         )
@@ -110,11 +113,12 @@ class TuyaCache:
 class TuyaDevice(SwitchDevice):
     """Representation of a Tuya switch."""
 
-    def __init__(self, device, name, switchid):
+    def __init__(self, device, name, icon, switchid):
         """Initialize the Tuya switch."""
         self._device = device
         self._name = name
         self._state = False
+        self._icon = icon
         self._switchid = switchid
 
     @property
@@ -126,6 +130,11 @@ class TuyaDevice(SwitchDevice):
     def is_on(self):
         """Check if Tuya switch is on."""
         return self._state
+
+    @property
+    def icon(self):
+        """Return the icon."""
+        return self._icon
 
     def turn_on(self, **kwargs):
         """Turn Tuya switch on."""
